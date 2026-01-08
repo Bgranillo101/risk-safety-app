@@ -451,5 +451,4 @@ This project is proprietary software developed for PGH Risk & Safety.
 <p align="center">
   <strong>PGH Risk & Safety</strong><br>
   <sub>Professional Safety Management Solutions</sub><br><br>
-  <sub>Built with ❤️ in Phoenix, Arizona</sub>
 </p>
