@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin Dashboard - PGH Risk & Safety Management Platform">
+    <meta name="theme-color" content="#282828">
+    <title>Admin Dashboard | PGH Risk & Safety</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    
+    <style>
+        /* Admin-specific styles */
+        .admin-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 260px;
+            background: var(--neutral-dark);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        
+        .admin-sidebar.collapsed {
+            transform: translateX(-260px);
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--neutral-gray);
+        }
+        
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            color: var(--neutral-white);
+            text-decoration: none;
+        }
+        
+        .sidebar-brand i {
+            font-size: 1.75rem;
+            color: var(--warning-yellow);
+            margin-right: 0.75rem;
+        }
+        
+        .sidebar-brand span {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+        
+        .nav-section {
+            padding: 0.5rem 1.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .nav-section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--neutral-gray-light);
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: var(--neutral-gray-light);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--neutral-white);
+        }
+        
+        .sidebar-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--neutral-white);
+            border-left-color: var(--primary-deep-blue);
+        }
+        
+        .sidebar-link i {
+            width: 20px;
+            margin-right: 0.75rem;
+        }
+        
+        .sidebar-link .badge {
+            margin-left: auto;
+        }
+        
+        .admin-content {
+            margin-left: 260px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+        
+        .admin-content.expanded {
+            margin-left: 0;
+        }
+        
+        .admin-header {
+            background: var(--neutral-white);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--neutral-lighter);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        
+        .sidebar-toggle:hover {
+            background: var(--neutral-light);
+        }
+        
+        .admin-main {
+            padding: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--neutral-white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--neutral-lighter);
+        }
+        
+        .stat-card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .stat-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        
+        .stat-card-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        .stat-card-change {
+            font-size: 0.8rem;
+        }
+        
+        .data-table {
+            background: var(--neutral-white);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--neutral-lighter);
+            overflow: hidden;
+        }
+        
+        .data-table-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid var(--neutral-lighter);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .data-table-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .table-search {
+            width: 250px;
+        }
+        
+        .table-responsive {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .table th {
+            background: var(--neutral-light);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary-deep-blue);
+            color: var(--neutral-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .role-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .activity-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            display: flex;
+            padding: 1rem;
+            border-bottom: 1px solid var(--neutral-lighter);
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .activity-content {
+            margin-left: 1rem;
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        
+        .quick-action {
+            padding: 1.25rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .quick-action:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .quick-action i {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .quick-action span {
+            display: block;
+            font-weight: 500;
+        }
+        
+        /* Chart placeholder */
+        .chart-placeholder {
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--neutral-light);
+            border-radius: 8px;
+        }
+        
+        /* Dark mode */
+        body.dark-mode .admin-header,
+        body.dark-mode .stat-card,
+        body.dark-mode .data-table {
+            background: var(--neutral-dark);
+            border-color: var(--neutral-gray);
+        }
+        
+        body.dark-mode .table th {
+            background: var(--neutral-darker);
+            color: var(--neutral-lighter);
+        }
+        
+        body.dark-mode .table td {
+            border-color: var(--neutral-gray);
+            color: var(--neutral-lighter);
+        }
+        
+        body.dark-mode .data-table-header {
+            border-color: var(--neutral-gray);
+        }
+        
+        body.dark-mode .activity-item {
+            border-color: var(--neutral-gray);
+        }
+        
+        @media (max-width: 991px) {
+            .admin-sidebar {
+                transform: translateX(-260px);
+            }
+            
+            .admin-sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .admin-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer" aria-live="polite"></div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="sidebar-brand">
+                <i class="fas fa-hard-hat"></i>
+                <span>PGH Safety</span>
+            </a>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="admin.html" class="sidebar-link active">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Management</div>
+            </div>
+            
+            <a href="#" class="sidebar-link" data-section="users">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+                <span class="badge bg-primary" id="userCount">0</span>
+            </a>
+            
+            <a href="#" class="sidebar-link" data-section="incidents">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Incidents</span>
+                <span class="badge bg-danger" id="openIncidentCount">0</span>
+            </a>
+            
+            <a href="#" class="sidebar-link" data-section="training">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Training</span>
+            </a>
+            
+            <a href="#" class="sidebar-link" data-section="documents">
+                <i class="fas fa-folder"></i>
+                <span>Documents</span>
+            </a>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics</div>
+            </div>
+            
+            <a href="#" class="sidebar-link" data-section="reports">
+                <i class="fas fa-chart-bar"></i>
+                <span>Reports</span>
+            </a>
+            
+            <a href="#" class="sidebar-link" data-section="compliance">
+                <i class="fas fa-clipboard-check"></i>
+                <span>Compliance</span>
+            </a>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">System</div>
+            </div>
+            
+            <a href="#" class="sidebar-link" data-section="settings">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+            
+            <a href="#" class="sidebar-link" data-section="audit">
+                <i class="fas fa-history"></i>
+                <span>Audit Log</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="admin-content" id="adminContent">
+        <!-- Header -->
+        <header class="admin-header">
+            <div class="d-flex align-items-center">
+                <button class="sidebar-toggle me-3" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="h5 mb-0">Admin Dashboard</h1>
+            </div>
+            
+            <div class="d-flex align-items-center">
+                <div class="dropdown me-3">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge bg-danger" id="notificationCount">0</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" style="width: 300px;">
+                        <li><h6 class="dropdown-header">Notifications</h6></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li id="notificationList">
+                            <div class="px-3 py-2 text-muted text-center">
+                                <small>No new notifications</small>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                        <div class="user-avatar me-2" id="userAvatar">?</div>
+                        <span id="userName">Loading...</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="index.html"><i class="fas fa-home me-2"></i>Back to Site</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#" id="logoutBtn"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main -->
+        <main class="admin-main">
+            <!-- Quick Actions -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <a href="report.html" class="quick-action bg-primary text-white">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>New Incident</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a href="photos.html" class="quick-action bg-success text-white">
+                        <i class="fas fa-camera"></i>
+                        <span>Add Photos</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a href="training.html" class="quick-action bg-warning text-dark">
+                        <i class="fas fa-book-open"></i>
+                        <span>Training</span>
+                    </a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <a href="#" class="quick-action bg-info text-white" data-section="reports">
+                        <i class="fas fa-file-export"></i>
+                        <span>Export Report</span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Stats Row -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6 col-xl-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="stat-card-icon bg-primary bg-opacity-10 text-primary">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <span class="stat-card-change text-success">
+                                <i class="fas fa-arrow-up"></i> 12%
+                            </span>
+                        </div>
+                        <div class="stat-card-value text-primary" id="totalUsers">0</div>
+                        <div class="stat-card-label">Total Users</div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-xl-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="stat-card-icon bg-danger bg-opacity-10 text-danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <span class="stat-card-change text-danger">
+                                <i class="fas fa-arrow-down"></i> 5%
+                            </span>
+                        </div>
+                        <div class="stat-card-value text-danger" id="openIncidents">0</div>
+                        <div class="stat-card-label">Open Incidents</div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-xl-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="stat-card-icon bg-success bg-opacity-10 text-success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <span class="stat-card-change text-success">
+                                <i class="fas fa-arrow-up"></i> 8%
+                            </span>
+                        </div>
+                        <div class="stat-card-value text-success" id="resolvedIncidents">0</div>
+                        <div class="stat-card-label">Resolved This Month</div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-xl-3">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="stat-card-icon bg-warning bg-opacity-10 text-warning">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <span class="stat-card-change text-success">
+                                <i class="fas fa-arrow-up"></i> 15%
+                            </span>
+                        </div>
+                        <div class="stat-card-value text-warning" id="trainingCompliance">0%</div>
+                        <div class="stat-card-label">Training Compliance</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Row -->
+            <div class="row g-4">
+                <!-- Recent Incidents Table -->
+                <div class="col-xl-8">
+                    <div class="data-table">
+                        <div class="data-table-header">
+                            <h3 class="data-table-title">Recent Incidents</h3>
+                            <div class="d-flex gap-2">
+                                <input type="text" class="form-control form-control-sm table-search" placeholder="Search...">
+                                <select class="form-select form-select-sm" style="width: auto;">
+                                    <option value="">All Status</option>
+                                    <option value="reported">Reported</option>
+                                    <option value="investigating">Investigating</option>
+                                    <option value="resolved">Resolved</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Title</th>
+                                        <th>Type</th>
+                                        <th>Severity</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="incidentsTableBody">
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4 text-muted">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>Loading...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Activity Feed -->
+                <div class="col-xl-4">
+                    <div class="data-table">
+                        <div class="data-table-header">
+                            <h3 class="data-table-title">Recent Activity</h3>
+                            <button class="btn btn-sm btn-outline-primary">View All</button>
+                        </div>
+                        <div class="activity-feed" id="activityFeed">
+                            <div class="text-center py-4 text-muted">
+                                <i class="fas fa-spinner fa-spin me-2"></i>Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Users Table -->
+            <div class="row g-4 mt-2">
+                <div class="col-12">
+                    <div class="data-table">
+                        <div class="data-table-header">
+                            <h3 class="data-table-title">User Management</h3>
+                            <div class="d-flex gap-2">
+                                <input type="text" class="form-control form-control-sm table-search" placeholder="Search users...">
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                    <i class="fas fa-plus me-1"></i>Add User
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Department</th>
+                                        <th>Status</th>
+                                        <th>Last Login</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4 text-muted">
+                                            <i class="fas fa-spinner fa-spin me-2"></i>Loading...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal fade" id="addUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="addUserForm">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-control" name="firstName" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-control" name="lastName" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Role</label>
+                                <select class="form-select" name="role" required>
+                                    <option value="employee">Employee</option>
+                                    <option value="supervisor">Supervisor</option>
+                                    <option value="manager">Manager</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Department</label>
+                                <input type="text" class="form-control" name="department">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Temporary Password</label>
+                                <input type="password" class="form-control" name="password" required
+                                       minlength="8" placeholder="Min. 8 characters">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus me-1"></i>Create User
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Auth check
+            if (!API.auth.isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const user = API.auth.getCurrentUser();
+            
+            // Admin/manager check
+            if (!['admin', 'manager'].includes(user?.role)) {
+                showToast('Access denied. Admin privileges required.', 'danger');
+                setTimeout(() => window.location.href = 'index.html', 2000);
+                return;
+            }
+            
+            // Update user display
+            document.getElementById('userName').textContent = `${user.firstName} ${user.lastName}`;
+            document.getElementById('userAvatar').textContent = user.firstName.charAt(0) + user.lastName.charAt(0);
+            
+            // Dark mode
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            
+            // Sidebar toggle
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('adminContent');
+            
+            document.getElementById('sidebarToggle').addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                sidebar.classList.toggle('show');
+                content.classList.toggle('expanded');
+            });
+            
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+                e.preventDefault();
+                await API.auth.logout();
+                window.location.href = 'login.html';
+            });
+            
+            // Load dashboard data
+            await loadDashboard();
+        });
+        
+        async function loadDashboard() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = 'flex';
+            
+            try {
+                // Load stats
+                const stats = await API.dashboard.getStats();
+                document.getElementById('totalUsers').textContent = stats.users?.total || 0;
+                document.getElementById('userCount').textContent = stats.users?.total || 0;
+                document.getElementById('openIncidents').textContent = stats.incidents?.open || 0;
+                document.getElementById('openIncidentCount').textContent = stats.incidents?.open || 0;
+                document.getElementById('resolvedIncidents').textContent = stats.incidents?.resolvedThisMonth || 0;
+                document.getElementById('trainingCompliance').textContent = `${stats.training?.completionRate || 0}%`;
+                document.getElementById('notificationCount').textContent = stats.incidents?.open || 0;
+                
+                // Load activity feed
+                await loadActivityFeed();
+                
+                // Load incidents table
+                await loadIncidentsTable();
+                
+                // Load users table
+                await loadUsersTable();
+                
+            } catch (error) {
+                console.error('Dashboard load error:', error);
+                showToast('Failed to load dashboard data', 'danger');
+            } finally {
+                overlay.style.display = 'none';
+            }
+        }
+        
+        async function loadActivityFeed() {
+            try {
+                const activity = await API.dashboard.getActivity(10);
+                const feed = document.getElementById('activityFeed');
+                
+                if (!activity || activity.length === 0) {
+                    feed.innerHTML = `
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-inbox fa-2x mb-2"></i>
+                            <p class="mb-0">No recent activity</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                feed.innerHTML = activity.map(item => {
+                    const iconClass = getActivityIcon(item.type);
+                    const bgClass = getActivityColor(item.type);
+                    
+                    return `
+                        <div class="activity-item">
+                            <div class="activity-icon ${bgClass} text-white">
+                                <i class="fas ${iconClass}"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">${item.title}</div>
+                                <div class="activity-time">
+                                    <i class="fas fa-clock me-1"></i>${formatTimeAgo(item.timestamp)}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Activity feed error:', error);
+            }
+        }
+        
+        async function loadIncidentsTable() {
+            try {
+                const response = await API.incidents.getAll({ limit: 10 });
+                const incidents = response.incidents || [];
+                const tbody = document.getElementById('incidentsTableBody');
+                
+                if (incidents.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                No incidents found
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                tbody.innerHTML = incidents.map(incident => {
+                    const severityClass = getSeverityClass(incident.severity);
+                    const statusClass = getStatusClass(incident.status);
+                    
+                    return `
+                        <tr>
+                            <td><code>#${incident.id}</code></td>
+                            <td>${escapeHtml(incident.title)}</td>
+                            <td><span class="badge bg-secondary">${incident.type}</span></td>
+                            <td><span class="badge ${severityClass}">${incident.severity}</span></td>
+                            <td><span class="badge ${statusClass}">${incident.status}</span></td>
+                            <td>${formatDate(incident.created_at)}</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-link" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>View</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i>Delete</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Incidents table error:', error);
+                document.getElementById('incidentsTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-danger">
+                            Failed to load incidents
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        async function loadUsersTable() {
+            try {
+                const response = await API.users.getAll();
+                const users = response.users || [];
+                const tbody = document.getElementById('usersTableBody');
+                
+                if (users.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                No users found
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                tbody.innerHTML = users.map(user => {
+                    const roleClass = getRoleClass(user.role);
+                    const initials = (user.first_name?.charAt(0) || '') + (user.last_name?.charAt(0) || '');
+                    
+                    return `
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar me-2">${initials}</div>
+                                    <div>
+                                        <strong>${escapeHtml(user.first_name || '')} ${escapeHtml(user.last_name || '')}</strong>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>${escapeHtml(user.email)}</td>
+                            <td><span class="role-badge ${roleClass}">${user.role}</span></td>
+                            <td>${escapeHtml(user.department || '-')}</td>
+                            <td>
+                                <span class="badge ${user.is_active ? 'bg-success' : 'bg-secondary'}">
+                                    ${user.is_active ? 'Active' : 'Inactive'}
+                                </span>
+                            </td>
+                            <td>${user.last_login ? formatDate(user.last_login) : 'Never'}</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-link" data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>View</a></li>
+                                        <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-ban me-2"></i>Deactivate</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Users table error:', error);
+                document.getElementById('usersTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-danger">
+                            Failed to load users
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        // Add user form
+        document.getElementById('addUserForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const userData = Object.fromEntries(formData.entries());
+            
+            try {
+                await API.users.create(userData);
+                showToast('User created successfully!', 'success');
+                bootstrap.Modal.getInstance(document.getElementById('addUserModal')).hide();
+                e.target.reset();
+                await loadUsersTable();
+            } catch (error) {
+                showToast(error.message || 'Failed to create user', 'danger');
+            }
+        });
+        
+        // Helper functions
+        function getActivityIcon(type) {
+            const icons = {
+                incident: 'fa-exclamation-triangle',
+                user: 'fa-user',
+                training: 'fa-graduation-cap',
+                document: 'fa-file',
+                photo: 'fa-camera'
+            };
+            return icons[type] || 'fa-circle';
+        }
+        
+        function getActivityColor(type) {
+            const colors = {
+                incident: 'bg-danger',
+                user: 'bg-primary',
+                training: 'bg-warning',
+                document: 'bg-info',
+                photo: 'bg-success'
+            };
+            return colors[type] || 'bg-secondary';
+        }
+        
+        function getSeverityClass(severity) {
+            const classes = {
+                low: 'bg-success',
+                medium: 'bg-warning text-dark',
+                high: 'bg-orange text-white',
+                critical: 'bg-danger'
+            };
+            return classes[severity] || 'bg-secondary';
+        }
+        
+        function getStatusClass(status) {
+            const classes = {
+                reported: 'bg-info',
+                investigating: 'bg-warning text-dark',
+                resolved: 'bg-success',
+                closed: 'bg-secondary'
+            };
+            return classes[status] || 'bg-secondary';
+        }
+        
+        function getRoleClass(role) {
+            const classes = {
+                admin: 'bg-danger text-white',
+                manager: 'bg-primary text-white',
+                supervisor: 'bg-warning text-dark',
+                employee: 'bg-success text-white'
+            };
+            return classes[role] || 'bg-secondary text-white';
+        }
+        
+        function formatDate(dateStr) {
+            return new Date(dateStr).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+        }
+        
+        function formatTimeAgo(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+            
+            if (diff < 60) return 'Just now';
+            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+            return `${Math.floor(diff / 86400)}d ago`;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast show`;
+            toast.innerHTML = `
+                <div class="toast-header bg-${type} text-white">
+                    <i class="fas fa-${type === 'success' ? 'check' : type === 'danger' ? 'times' : 'info'}-circle me-2"></i>
+                    <strong class="me-auto">${type === 'success' ? 'Success' : type === 'danger' ? 'Error' : 'Info'}</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">${message}</div>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 5000);
+        }
+    </script>
+</body>
+</html>

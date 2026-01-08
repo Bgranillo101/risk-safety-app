@@ -401,6 +401,227 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api.js"></script>
     <script src="script.js"></script>
+    <script>
+        // Enhanced photo upload with API integration
+        document.addEventListener('DOMContentLoaded', () => {
+            initPhotoUpload();
+            loadExistingPhotos();
+        });
+        
+        function initPhotoUpload() {
+            // Get all dropzones
+            const dropzones = document.querySelectorAll('.dropzone');
+            
+            dropzones.forEach(dropzone => {
+                const phase = dropzone.dataset.phase;
+                const input = dropzone.querySelector('input[type="file"]');
+                const preview = document.getElementById(`${phase}Preview`);
+                
+                // Drag and drop events
+                dropzone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropzone.classList.add('dragover');
+                });
+                
+                dropzone.addEventListener('dragleave', () => {
+                    dropzone.classList.remove('dragover');
+                });
+                
+                dropzone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropzone.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length) {
+                        handleFiles(files, phase, preview);
+                    }
+                });
+                
+                // File input change
+                input?.addEventListener('change', (e) => {
+                    const files = e.target.files;
+                    if (files.length) {
+                        handleFiles(files, phase, preview);
+                    }
+                });
+            });
+        }
+        
+        async function handleFiles(files, phase, previewContainer) {
+            for (const file of files) {
+                if (!file.type.startsWith('image/')) {
+                    showToast('Only image files are allowed.', 'warning');
+                    continue;
+                }
+                
+                // Create preview element
+                const previewItem = createPreviewItem(file, phase);
+                previewContainer.appendChild(previewItem);
+                
+                // Upload file
+                await uploadPhoto(file, phase, previewItem);
+            }
+        }
+        
+        function createPreviewItem(file, phase) {
+            const div = document.createElement('div');
+            div.className = 'photo-preview-item position-relative';
+            div.innerHTML = `
+                <div class="upload-progress">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                        <span class="visually-hidden">Uploading...</span>
+                    </div>
+                </div>
+                <img src="${URL.createObjectURL(file)}" alt="Preview" class="img-fluid rounded">
+                <div class="photo-overlay">
+                    <span class="badge bg-${phase === 'pre' ? 'primary' : phase === 'during' ? 'warning' : 'success'}">${phase.toUpperCase()}</span>
+                </div>
+            `;
+            return div;
+        }
+        
+        async function uploadPhoto(file, phase, previewItem) {
+            const progressDiv = previewItem.querySelector('.upload-progress');
+            
+            try {
+                // Check if API is available and user is authenticated
+                if (typeof API !== 'undefined' && API.auth.isAuthenticated()) {
+                    const result = await API.photos.upload(file, {
+                        phase: phase,
+                        description: `${phase.charAt(0).toUpperCase() + phase.slice(1)}-task photo`
+                    });
+                    
+                    previewItem.dataset.photoId = result.id;
+                    progressDiv.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+                    showToast('Photo uploaded successfully!', 'success');
+                } else {
+                    // Demo mode
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    progressDiv.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+                    showToast('Photo added! (Demo Mode)', 'success');
+                }
+                
+                // Add delete button
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-sm btn-danger photo-delete';
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.onclick = () => deletePhoto(previewItem, phase);
+                previewItem.appendChild(deleteBtn);
+                
+            } catch (error) {
+                progressDiv.innerHTML = '<i class="fas fa-times-circle text-danger"></i>';
+                showToast(error.message || 'Upload failed', 'danger');
+            }
+        }
+        
+        async function deletePhoto(previewItem, phase) {
+            const photoId = previewItem.dataset.photoId;
+            
+            if (photoId && typeof API !== 'undefined' && API.auth.isAuthenticated()) {
+                try {
+                    await API.photos.delete(photoId);
+                } catch (error) {
+                    showToast('Failed to delete photo', 'danger');
+                    return;
+                }
+            }
+            
+            previewItem.remove();
+            showToast('Photo removed', 'info');
+        }
+        
+        async function loadExistingPhotos() {
+            // Only load from API if authenticated
+            if (typeof API === 'undefined' || !API.auth.isAuthenticated()) {
+                return;
+            }
+            
+            try {
+                const response = await API.photos.getAll({ limit: 20 });
+                const photos = response.photos || [];
+                
+                photos.forEach(photo => {
+                    const phase = photo.phase || 'pre';
+                    const preview = document.getElementById(`${phase}Preview`);
+                    if (!preview) return;
+                    
+                    const div = document.createElement('div');
+                    div.className = 'photo-preview-item position-relative';
+                    div.dataset.photoId = photo.id;
+                    div.innerHTML = `
+                        <img src="/api/photos/${photo.id}/image" alt="${photo.description || 'Photo'}" class="img-fluid rounded">
+                        <div class="photo-overlay">
+                            <span class="badge bg-${phase === 'pre' ? 'primary' : phase === 'during' ? 'warning' : 'success'}">${phase.toUpperCase()}</span>
+                        </div>
+                        <button class="btn btn-sm btn-danger photo-delete" onclick="deletePhoto(this.parentElement, '${phase}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    `;
+                    preview.appendChild(div);
+                });
+                
+            } catch (error) {
+                console.log('Could not load existing photos:', error.message);
+            }
+        }
+        
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const icons = { success: 'check-circle', danger: 'times-circle', warning: 'exclamation-triangle', info: 'info-circle' };
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast show';
+            toast.innerHTML = `
+                <div class="toast-header bg-${type} text-white">
+                    <i class="fas fa-${icons[type]} me-2"></i>
+                    <strong class="me-auto">${type === 'success' ? 'Success' : type === 'danger' ? 'Error' : 'Notice'}</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">${message}</div>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 5000);
+        }
+    </script>
+    <style>
+        .photo-preview-item {
+            display: inline-block;
+            margin: 0.5rem;
+            max-width: 150px;
+        }
+        .photo-preview-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+        .upload-progress {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            background: rgba(255,255,255,0.9);
+            padding: 0.5rem;
+            border-radius: 50%;
+        }
+        .photo-delete {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            padding: 0.25rem 0.4rem;
+            font-size: 0.75rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .photo-preview-item:hover .photo-delete {
+            opacity: 1;
+        }
+        .dropzone.dragover {
+            border-color: var(--bs-primary);
+            background: rgba(13, 110, 253, 0.1);
+        }
+    </style>
 </body>
 </html>

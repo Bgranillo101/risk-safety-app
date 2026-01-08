@@ -2,13 +2,14 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Production%20Ready-brightgreen" alt="Status">
-  <img src="https://img.shields.io/badge/Version-1.0.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/Version-2.0.0-blue" alt="Version">
   <img src="https://img.shields.io/badge/License-Proprietary-red" alt="License">
+  <img src="https://img.shields.io/badge/Node.js-18%2B-green" alt="Node.js">
 </p>
 
 <p align="center">
   <strong>Enterprise-grade workplace safety management platform</strong><br>
-  Incident reporting • Training compliance • Photo documentation • Real-time analytics
+  Full-Stack Node.js • RESTful API • JWT Authentication • Real-time Analytics
 </p>
 
 <p align="center">
@@ -16,48 +17,70 @@
   <a href="#-features">Features</a> •
   <a href="#-tech-stack">Tech Stack</a> •
   <a href="#-getting-started">Getting Started</a> •
-  <a href="#-architecture">Architecture</a>
+  <a href="#-api-documentation">API Docs</a>
 </p>
 
 ---
 
 ## 📋 Overview
 
-PGH Risk & Safety is a comprehensive web application designed for independent safety consultants and enterprise organizations to manage workplace safety operations. The platform streamlines incident reporting, training compliance tracking, and safety documentation with an intuitive, accessible interface.
+PGH Risk & Safety is a **full-stack web application** designed for independent safety consultants and enterprise organizations to manage workplace safety operations. Built with modern technologies and enterprise-grade architecture, it provides a complete solution for incident reporting, training compliance tracking, and safety documentation.
 
 **Key Business Value:**
 - 📉 Reduce incident response time with streamlined reporting workflows
 - 📊 Maintain OSHA compliance with automated training tracking
 - 📸 Document site conditions with organized photo management
 - 🔄 Enable real-time safety metrics visibility across teams
+- 🔐 Role-based access control for enterprise security
 
-## 🎬 Live Demo
+## 🚀 Quick Start
 
-> **[View Live Application →](https://bgranillo101.github.io/risk-safety-app/)**
+```bash
+# Clone the repository
+git clone https://github.com/Bgranillo101/risk-safety-app.git
+cd risk-safety-app
 
-| Page | Description |
-|------|-------------|
-| [Dashboard](https://bgranillo101.github.io/risk-safety-app/index.html) | Safety metrics & activity overview |
-| [Photos](https://bgranillo101.github.io/risk-safety-app/photos.html) | Drag-and-drop photo documentation |
-| [Training](https://bgranillo101.github.io/risk-safety-app/training.html) | Module progress & certifications |
-| [Report](https://bgranillo101.github.io/risk-safety-app/report.html) | Incident reporting form |
-| [About](https://bgranillo101.github.io/risk-safety-app/about.html) | Contact & company information |
+# Install dependencies
+npm install
+
+# Initialize database with demo data
+npm run db:init
+npm run db:seed
+
+# Start development server
+npm run dev
+```
+
+**Demo Accounts:**
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@pghsafety.com | Password123! |
+| Manager | manager@pghsafety.com | Password123! |
+| Supervisor | supervisor@pghsafety.com | Password123! |
+| Employee | employee@pghsafety.com | Password123! |
 
 ## ✨ Features
 
-<table>
-<tr>
-<td width="50%">
+### Frontend
+- **Responsive Dashboard** - Real-time safety KPI metrics & activity feed
+- **Photo Documentation** - Drag-and-drop upload with phase-based organization
+- **Training Center** - Module progress tracking with completion certificates
+- **Incident Reporting** - Multi-step forms with severity classification
+- **Dark Mode** - Full theme support with persistent preferences
+- **Admin Panel** - User management, incidents overview, compliance metrics
 
-### 📊 Dashboard
-- Real-time safety KPI metrics
-- Activity feed with timestamped events
-- Quick-action navigation cards
-- Responsive metric visualizations
+### Backend (NEW in v2.0)
+- **RESTful API** - Complete CRUD operations for all entities
+- **JWT Authentication** - Secure token-based auth with refresh support
+- **Role-Based Access** - Admin, Manager, Supervisor, Employee roles
+- **File Uploads** - Multer-powered photo/document management
+- **SQLite Database** - Zero-config database with sql.js
+- **Rate Limiting** - API protection against abuse
+- **Security Headers** - Helmet.js for enhanced security
 
-### 📸 Photo Documentation
-- Drag-and-drop file upload
-- Client-side image validation
+## 🛠 Tech Stack
+
+### Frontend
 - Phase-based organization system
 - Preview before upload
 
@@ -115,15 +138,147 @@ PGH Risk & Safety is a comprehensive web application designed for independent sa
 
 | Category | Technologies |
 |----------|--------------|
-| **Frontend** | HTML5, CSS3, JavaScript (ES6+) |
-| **Framework** | Bootstrap 5.3.0 |
+| **Frontend** | HTML5, CSS3, JavaScript (ES6+), Bootstrap 5.3.0 |
+| **Backend** | Node.js, Express 4.18 |
+| **Database** | SQLite (sql.js) |
+| **Authentication** | JWT, bcrypt |
+| **Security** | Helmet.js, CORS, Rate Limiting |
 | **Icons** | Font Awesome 6.4.0 |
 | **Typography** | Google Fonts (Poppins, Inter) |
-| **Version Control** | Git, GitHub |
-| **Deployment** | GitHub Pages |
+| **File Uploads** | Multer |
+| **Logging** | Winston |
 
 ## 📁 Project Structure
 
+```
+risk-safety-app/
+├── index.html              # Main dashboard page
+├── login.html              # Authentication page
+├── admin.html              # Admin dashboard
+├── photos.html             # Photo documentation
+├── training.html           # Training modules
+├── report.html             # Incident reporting
+├── about.html              # About page
+├── styles.css              # Main stylesheet with CSS variables
+├── script.js               # Frontend JavaScript
+├── js/
+│   └── api.js              # Frontend API client
+├── server/
+│   ├── index.js            # Express server entry point
+│   ├── database/
+│   │   ├── init.js         # Database initialization
+│   │   └── seed.js         # Demo data seeder
+│   ├── middleware/
+│   │   └── auth.js         # JWT authentication
+│   ├── routes/
+│   │   ├── auth.js         # Auth endpoints
+│   │   ├── users.js        # User CRUD
+│   │   ├── incidents.js    # Incident management
+│   │   ├── photos.js       # Photo uploads
+│   │   ├── training.js     # Training modules
+│   │   ├── documents.js    # Document management
+│   │   └── dashboard.js    # Dashboard stats
+│   └── utils/
+│       └── logger.js       # Winston logger
+├── uploads/                # User uploads directory
+│   ├── photos/
+│   └── documents/
+├── data/
+│   └── safety.db           # SQLite database
+├── package.json
+└── README.md
+```
+
+## 📡 API Documentation
+
+### Base URL
+```
+http://localhost:3000/api
+```
+
+### Authentication
+All protected endpoints require a Bearer token:
+```
+Authorization: Bearer <jwt_token>
+```
+
+### Endpoints
+
+#### Auth
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/auth/register` | Create new account |
+| POST | `/auth/login` | User login |
+| POST | `/auth/logout` | User logout |
+| GET | `/auth/me` | Get current user |
+| POST | `/auth/refresh` | Refresh JWT token |
+
+#### Users (Admin)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/users` | List all users |
+| GET | `/users/:id` | Get user by ID |
+| POST | `/users` | Create user |
+| PUT | `/users/:id` | Update user |
+| DELETE | `/users/:id` | Deactivate user |
+
+#### Incidents
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/incidents` | List incidents |
+| GET | `/incidents/:id` | Get incident |
+| POST | `/incidents` | Create incident |
+| PUT | `/incidents/:id` | Update incident |
+| PATCH | `/incidents/:id/status` | Update status |
+| DELETE | `/incidents/:id` | Delete incident |
+
+#### Photos
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/photos` | List photos |
+| GET | `/photos/:id` | Get photo metadata |
+| GET | `/photos/:id/image` | Get photo file |
+| POST | `/photos` | Upload photo |
+| DELETE | `/photos/:id` | Delete photo |
+
+#### Training
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/training/modules` | List modules |
+| GET | `/training/modules/:id` | Get module |
+| POST | `/training/modules` | Create module |
+| GET | `/training/progress` | Get user progress |
+| POST | `/training/modules/:id/start` | Start module |
+| POST | `/training/modules/:id/complete` | Complete module |
+
+#### Dashboard
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/dashboard/stats` | Get statistics |
+| GET | `/dashboard/activity` | Get activity feed |
+| GET | `/dashboard/compliance` | Get compliance metrics |
+
+## � Deployment
+
+### Development
+```bash
+npm run dev    # Starts nodemon with hot reload
+```
+
+### Production
+```bash
+npm start      # Starts production server
+```
+
+### Environment Variables
+Create a `.env` file:
+```env
+PORT=3000
+HOST=localhost
+NODE_ENV=development
+JWT_SECRET=your-super-secret-key
+JWT_EXPIRES_IN=7d
+CORS_ORIGIN=*
 ```
 risk-safety-app/
 │

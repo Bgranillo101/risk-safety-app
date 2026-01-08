@@ -87,6 +87,12 @@
                             <i class="fas fa-moon"></i>
                         </button>
                     </li>
+                    <!-- Auth buttons - dynamic based on login state -->
+                    <li class="nav-item ms-lg-2" id="authButtonContainer">
+                        <a href="login.html" class="btn btn-warning btn-sm" id="loginBtn">
+                            <i class="fas fa-sign-in-alt me-1"></i> Login
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -235,64 +241,18 @@
             
             <div class="row">
                 <div class="col-lg-8 mx-auto">
-                    <div class="activity-feed">
-                        <!-- Activity Item 1 -->
-                        <div class="activity-item card border-0 shadow-sm mb-3">
-                            <div class="card-body d-flex align-items-start">
-                                <div class="activity-icon bg-danger-soft text-danger me-3">
-                                    <i class="fas fa-file-alt"></i>
-                                </div>
-                                <div class="activity-content flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <h6 class="mb-1">Incident Report #1042</h6>
-                                            <p class="text-muted mb-0 small">Slip hazard reported at Site A</p>
-                                        </div>
-                                        <span class="badge bg-danger-soft text-danger">Today</span>
-                                    </div>
-                                </div>
+                    <div class="activity-feed" id="activityFeed">
+                        <!-- Activity items will be loaded dynamically -->
+                        <div class="text-center py-4" id="activityLoader">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
                             </div>
-                        </div>
-                        
-                        <!-- Activity Item 2 -->
-                        <div class="activity-item card border-0 shadow-sm mb-3">
-                            <div class="card-body d-flex align-items-start">
-                                <div class="activity-icon bg-success-soft text-success me-3">
-                                    <i class="fas fa-camera"></i>
-                                </div>
-                                <div class="activity-content flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <h6 class="mb-1">Photo Uploaded – Site B</h6>
-                                            <p class="text-muted mb-0 small">Pre-task safety inspection photos</p>
-                                        </div>
-                                        <span class="badge bg-secondary-soft text-secondary">Yesterday</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Activity Item 3 -->
-                        <div class="activity-item card border-0 shadow-sm mb-3">
-                            <div class="card-body d-flex align-items-start">
-                                <div class="activity-icon bg-info-soft text-info me-3">
-                                    <i class="fas fa-graduation-cap"></i>
-                                </div>
-                                <div class="activity-content flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <h6 class="mb-1">Training Completed – OSHA 10</h6>
-                                            <p class="text-muted mb-0 small">Employee certification updated</p>
-                                        </div>
-                                        <span class="badge bg-secondary-soft text-secondary">3 days ago</span>
-                                    </div>
-                                </div>
-                            </div>
+                            <p class="text-muted mt-2 mb-0">Loading activity...</p>
                         </div>
                     </div>
                     
                     <div class="text-center mt-4">
-                        <a href="#" class="btn btn-outline-primary">
+                        <a href="admin.html" class="btn btn-outline-primary" id="viewAllActivityBtn">
                             View All Activity <i class="fas fa-arrow-right ms-2"></i>
                         </a>
                     </div>
@@ -439,6 +399,167 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api.js"></script>
     <script src="script.js"></script>
+    <script>
+        // Enhanced dashboard initialization with API integration
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Update auth button based on login state
+            updateAuthButton();
+            
+            // Load dynamic data if API is available
+            await loadDashboardData();
+        });
+        
+        function updateAuthButton() {
+            const container = document.getElementById('authButtonContainer');
+            if (!container) return;
+            
+            if (typeof API !== 'undefined' && API.auth.isAuthenticated()) {
+                const user = API.auth.getCurrentUser();
+                container.innerHTML = `
+                    <div class="dropdown">
+                        <button class="btn btn-warning btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i> ${user?.firstName || 'User'}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            ${['admin', 'manager'].includes(user?.role) ? 
+                                '<li><a class="dropdown-item" href="admin.html"><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</a></li><li><hr class="dropdown-divider"></li>' : ''}
+                            <li><a class="dropdown-item" href="#" id="profileLink"><i class="fas fa-user me-2"></i>My Profile</a></li>
+                            <li><a class="dropdown-item" href="#" id="logoutLink"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                `;
+                
+                // Logout handler
+                document.getElementById('logoutLink')?.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    await API.auth.logout();
+                    window.location.reload();
+                });
+            } else {
+                container.innerHTML = `
+                    <a href="login.html" class="btn btn-warning btn-sm">
+                        <i class="fas fa-sign-in-alt me-1"></i> Login
+                    </a>
+                `;
+            }
+        }
+        
+        async function loadDashboardData() {
+            // Only load from API if authenticated
+            if (typeof API === 'undefined' || !API.auth.isAuthenticated()) {
+                // Show demo data
+                loadDemoActivity();
+                return;
+            }
+            
+            try {
+                // Load real data from API
+                const [stats, activity] = await Promise.all([
+                    API.dashboard.getStats().catch(() => null),
+                    API.dashboard.getActivity(5).catch(() => null)
+                ]);
+                
+                // Update metrics if stats available
+                if (stats) {
+                    updateMetrics(stats);
+                }
+                
+                // Update activity feed
+                if (activity && activity.length > 0) {
+                    renderActivityFeed(activity);
+                } else {
+                    loadDemoActivity();
+                }
+                
+            } catch (error) {
+                console.log('Using demo data:', error.message);
+                loadDemoActivity();
+            }
+        }
+        
+        function updateMetrics(stats) {
+            // Update metric cards with real data
+            const incidents = document.querySelector('.metric-value.text-primary.counter');
+            if (incidents && stats.incidents) {
+                incidents.dataset.target = stats.incidents.thisMonth || 0;
+            }
+            
+            const nearMisses = document.querySelector('.metric-value.text-warning.counter');
+            if (nearMisses && stats.incidents) {
+                nearMisses.dataset.target = stats.incidents.nearMisses || 0;
+            }
+        }
+        
+        function renderActivityFeed(activities) {
+            const feed = document.getElementById('activityFeed');
+            if (!feed) return;
+            
+            feed.innerHTML = activities.map(item => {
+                const config = getActivityConfig(item.type);
+                return `
+                    <div class="activity-item card border-0 shadow-sm mb-3">
+                        <div class="card-body d-flex align-items-start">
+                            <div class="activity-icon ${config.bgClass} ${config.textClass} me-3">
+                                <i class="fas ${config.icon}"></i>
+                            </div>
+                            <div class="activity-content flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">${escapeHtml(item.title)}</h6>
+                                        <p class="text-muted mb-0 small">${escapeHtml(item.description || '')}</p>
+                                    </div>
+                                    <span class="badge ${config.badgeClass}">${formatTimeAgo(item.timestamp)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function loadDemoActivity() {
+            const feed = document.getElementById('activityFeed');
+            if (!feed) return;
+            
+            const demoActivities = [
+                { type: 'incident', title: 'Incident Report #1042', description: 'Slip hazard reported at Site A', timestamp: new Date() },
+                { type: 'photo', title: 'Photo Uploaded – Site B', description: 'Pre-task safety inspection photos', timestamp: new Date(Date.now() - 86400000) },
+                { type: 'training', title: 'Training Completed – OSHA 10', description: 'Employee certification updated', timestamp: new Date(Date.now() - 259200000) }
+            ];
+            
+            renderActivityFeed(demoActivities);
+        }
+        
+        function getActivityConfig(type) {
+            const configs = {
+                incident: { icon: 'fa-file-alt', bgClass: 'bg-danger-soft', textClass: 'text-danger', badgeClass: 'bg-danger-soft text-danger' },
+                photo: { icon: 'fa-camera', bgClass: 'bg-success-soft', textClass: 'text-success', badgeClass: 'bg-secondary-soft text-secondary' },
+                training: { icon: 'fa-graduation-cap', bgClass: 'bg-info-soft', textClass: 'text-info', badgeClass: 'bg-secondary-soft text-secondary' },
+                user: { icon: 'fa-user', bgClass: 'bg-primary-soft', textClass: 'text-primary', badgeClass: 'bg-secondary-soft text-secondary' },
+                document: { icon: 'fa-file', bgClass: 'bg-warning-soft', textClass: 'text-warning', badgeClass: 'bg-secondary-soft text-secondary' }
+            };
+            return configs[type] || configs.incident;
+        }
+        
+        function formatTimeAgo(date) {
+            const d = new Date(date);
+            const now = new Date();
+            const diff = Math.floor((now - d) / 1000);
+            
+            if (diff < 60) return 'Just now';
+            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+            if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+            return d.toLocaleDateString();
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+    </script>
 </body>
 </html>
