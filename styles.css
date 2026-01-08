@@ -1,0 +1,1532 @@
+/* 
+   ===========================================================
+   PGH Risk & Safety - Professional Stylesheet
+   ===========================================================
+   
+   Senior Developer Production-Ready Stylesheet
+   
+   This file contains all custom CSS styling for the PGH Risk & Safety 
+   application. Built with modern CSS best practices including:
+   - CSS Custom Properties for theming
+   - CSS animations and transitions
+   - Mobile-first responsive design
+   - Accessibility considerations
+   - Performance optimizations
+   
+   TABLE OF CONTENTS:
+   1. CSS Variables (Custom Properties)
+   2. Base & Reset Styles
+   3. Typography
+   4. Loading & Animations
+   5. Navbar Styling
+   6. Hero Section
+   7. Quick Stats Bar
+   8. Section Styling
+   9. Cards & Metric Components
+   10. Activity Feed
+   11. Quick Action Cards
+   12. Photo Upload Components
+   13. Form Styling
+   14. Training Page
+   15. Footer
+   16. Utility Classes
+   17. Dark Mode
+   18. Back to Top Button
+   19. Responsive Breakpoints
+   
+   ===========================================================
+*/
+
+
+/* ===========================================================
+   1. CSS VARIABLES (Custom Properties)
+   ===========================================================
+   Comprehensive design tokens for consistent theming
+*/
+:root {
+    /* Primary Colors */
+    --primary-deep-blue: #000191;
+    --primary-blue: #3498db;
+    --primary-blue-hover: #2980b9;
+    --primary-blue-light: #5dade2;
+    
+    /* Status Colors */
+    --success-color: #27ae60;
+    --success-dark: #145a32;
+    --success-green: #27ae60;
+    --success-green-hover: #219a52;
+    --danger-color: #e74c3c;
+    --danger-dark: #922b21;
+    --danger-red: #e74c3c;
+    --danger-red-hover: #c0392b;
+    --warning-yellow: #f39c12;
+    --warning-yellow-hover: #d68910;
+    --info-blue: #17a2b8;
+    
+    /* Neutral Colors */
+    --neutral-dark: #282828;
+    --neutral-darker: #1a1a1a;
+    --neutral-gray: #555555;
+    --neutral-gray-light: #888888;
+    --neutral-light: #f8f9fa;
+    --neutral-lighter: #e9ecef;
+    --neutral-white: #ffffff;
+    --text-dark: #333333;
+    --text-muted: #6c757d;
+    
+    /* Soft Background Colors (for icons/badges) */
+    --primary-soft: rgba(52, 152, 219, 0.15);
+    --success-soft: rgba(39, 174, 96, 0.15);
+    --danger-soft: rgba(231, 76, 60, 0.15);
+    --warning-soft: rgba(243, 156, 18, 0.15);
+    --info-soft: rgba(23, 162, 184, 0.15);
+    --secondary-soft: rgba(108, 117, 125, 0.15);
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+    --shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.2);
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.3s ease;
+    --transition-slow: 0.5s ease;
+    
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 20px;
+    --radius-full: 50%;
+    
+    /* Typography */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-brand: 'Poppins', var(--font-primary);
+    
+    /* Z-Index Scale */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-toast: 1080;
+}
+
+
+/* ===========================================================
+   2. BASE & RESET STYLES
+   ===========================================================
+*/
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+}
+
+body {
+    font-family: var(--font-primary);
+    background-color: var(--neutral-light);
+    color: var(--text-dark);
+    line-height: 1.6;
+    overflow-x: hidden;
+    padding-top: 70px; /* Account for fixed navbar */
+}
+
+/* Focus styles for accessibility */
+:focus-visible {
+    outline: 3px solid var(--primary-blue);
+    outline-offset: 2px;
+}
+
+/* Image defaults */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Selection styling */
+::selection {
+    background-color: var(--primary-blue);
+    color: var(--neutral-white);
+}
+
+
+/* ===========================================================
+   3. TYPOGRAPHY
+   ===========================================================
+*/
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-brand);
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 0.5em;
+}
+
+.navbar-brand {
+    font-family: var(--font-brand);
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: -0.5px;
+}
+
+.display-3 {
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+.lead {
+    font-size: 1.15rem;
+    font-weight: 400;
+    opacity: 0.9;
+}
+
+/* Section Headers */
+.section-badge {
+    display: inline-block;
+    background: var(--primary-soft);
+    color: var(--primary-blue);
+    padding: 0.35rem 1rem;
+    border-radius: var(--radius-xl);
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.75rem;
+}
+
+.section-title {
+    font-size: 2rem;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+
+/* ===========================================================
+   4. LOADING & ANIMATIONS
+   ===========================================================
+*/
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--neutral-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.loading-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Fade In Up Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+}
+
+/* Bounce Animation (for scroll indicator) */
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+.bounce {
+    animation: bounce 2s infinite;
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Counter Animation Class */
+.counter {
+    display: inline-block;
+}
+
+
+/* ===========================================================
+   5. NAVBAR STYLING
+   ===========================================================
+*/
+.navbar {
+    background-color: var(--neutral-dark) !important;
+    box-shadow: var(--shadow-md);
+    padding: 0.75rem 0;
+    transition: all var(--transition-base);
+}
+
+/* Navbar scroll effect */
+.navbar.scrolled {
+    background-color: var(--neutral-darker) !important;
+    padding: 0.5rem 0;
+    box-shadow: var(--shadow-lg);
+}
+
+.navbar-brand {
+    color: var(--neutral-white) !important;
+}
+
+.navbar-brand i {
+    color: var(--warning-yellow);
+}
+
+.navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    position: relative;
+    transition: color var(--transition-fast);
+}
+
+.navbar-nav .nav-link:hover {
+    color: #87ceeb !important;
+}
+
+.navbar-nav .nav-link.active {
+    color: var(--neutral-white) !important;
+}
+
+/* Active link underline */
+.navbar-nav .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 1rem;
+    right: 1rem;
+    height: 2px;
+    background-color: var(--neutral-white);
+    border-radius: 2px;
+}
+
+/* Dark Mode Toggle Button */
+#darkModeToggle {
+    border-radius: var(--radius-full);
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* ===========================================================
+   6. HERO SECTION
+   ===========================================================
+*/
+.hero-section {
+    position: relative;
+    min-height: 100vh;
+    background-image: 
+        linear-gradient(135deg, rgba(0, 1, 145, 0.85) 0%, rgba(39, 174, 96, 0.7) 100%),
+        url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    display: flex;
+    align-items: center;
+    padding-top: 80px;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(to top, var(--neutral-dark), transparent);
+}
+
+.hero-section .container {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-section .badge {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+}
+
+.hero-section .btn {
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    transition: all var(--transition-base);
+}
+
+.hero-section .btn:hover {
+    transform: translateY(-3px);
+}
+
+.scroll-indicator {
+    margin-top: 2rem;
+}
+
+.scroll-indicator a {
+    opacity: 0.7;
+    transition: opacity var(--transition-base);
+}
+
+.scroll-indicator a:hover {
+    opacity: 1;
+}
+
+
+/* ===========================================================
+   7. QUICK STATS BAR
+   ===========================================================
+*/
+.quick-stats {
+    background: linear-gradient(135deg, var(--neutral-dark) 0%, var(--neutral-darker) 100%);
+}
+
+.stat-item {
+    padding: 0.5rem;
+}
+
+.stat-item i {
+    display: block;
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: var(--font-brand);
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+
+/* ===========================================================
+   8. SECTION STYLING
+   ===========================================================
+*/
+.section-header {
+    margin-bottom: 3rem;
+}
+
+section {
+    position: relative;
+}
+
+/* Background Light Section */
+.bg-light {
+    background-color: var(--neutral-lighter) !important;
+}
+
+
+/* ===========================================================
+   9. CARDS & METRIC COMPONENTS
+   ===========================================================
+*/
+/* Base Card Styles */
+.card {
+    border-radius: var(--radius-lg);
+    border: none;
+    transition: all var(--transition-base);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Card Header Override */
+.card-header {
+    background-color: var(--text-dark) !important;
+    color: var(--neutral-white) !important;
+    font-weight: 600;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+}
+
+/* Metric Cards */
+.metric-card {
+    border-left: 4px solid transparent;
+}
+
+.metric-card:nth-child(1) .card {
+    border-left-color: var(--primary-blue);
+}
+
+.col-md-4:nth-child(1) .metric-card {
+    border-left-color: var(--primary-blue);
+}
+
+.col-md-4:nth-child(2) .metric-card {
+    border-left-color: var(--warning-yellow);
+}
+
+.col-md-4:nth-child(3) .metric-card {
+    border-left-color: var(--success-green);
+}
+
+.metric-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    font-size: 1.5rem;
+}
+
+.metric-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-family: var(--font-brand);
+    margin-bottom: 0;
+}
+
+.metric-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.metric-trend {
+    font-size: 0.8rem;
+}
+
+/* Soft Background Utilities */
+.bg-primary-soft { background-color: var(--primary-soft) !important; }
+.bg-success-soft { background-color: var(--success-soft) !important; }
+.bg-danger-soft { background-color: var(--danger-soft) !important; }
+.bg-warning-soft { background-color: var(--warning-soft) !important; }
+.bg-info-soft { background-color: var(--info-soft) !important; }
+.bg-secondary-soft { background-color: var(--secondary-soft) !important; }
+
+
+/* ===========================================================
+   10. ACTIVITY FEED
+   ===========================================================
+*/
+.activity-feed {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.activity-item {
+    transition: all var(--transition-base);
+}
+
+.activity-item:hover {
+    transform: translateX(5px);
+}
+
+.activity-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+
+/* ===========================================================
+   11. QUICK ACTION CARDS
+   ===========================================================
+*/
+.quick-action-card .card {
+    transition: all var(--transition-base);
+    cursor: pointer;
+}
+
+.quick-action-card:hover .card {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-xl);
+}
+
+.action-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform var(--transition-base);
+}
+
+.quick-action-card:hover .action-icon {
+    transform: scale(1.1);
+}
+
+
+/* ===========================================================
+   12. PHOTO UPLOAD COMPONENTS
+   ===========================================================
+*/
+/* Photo Upload Cards */
+.photo-upload-section {
+    background: var(--neutral-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-left: 4px solid var(--primary-blue);
+}
+
+.photo-upload-section.pre-task {
+    border-left-color: var(--success-green);
+}
+
+.photo-upload-section.during-task {
+    border-left-color: var(--warning-yellow);
+}
+
+.photo-upload-section.post-task {
+    border-left-color: var(--primary-blue);
+}
+
+/* Photo Preview Area */
+.photo-preview-container {
+    position: relative;
+    border: 2px dashed var(--neutral-lighter);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-align: center;
+    background: var(--neutral-light);
+    transition: all var(--transition-base);
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.photo-preview-container:hover {
+    border-color: var(--primary-blue);
+    background: var(--primary-soft);
+}
+
+.photo-preview-container.dragover {
+    border-color: var(--success-green);
+    background: var(--success-soft);
+}
+
+.photo-preview-container img {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+}
+
+/* Upload Progress Bar */
+.upload-progress {
+    height: 4px;
+    background: var(--neutral-lighter);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-top: 1rem;
+    display: none;
+}
+
+.upload-progress.active {
+    display: block;
+}
+
+.upload-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--success-green), var(--primary-blue));
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: var(--radius-sm);
+}
+
+/* Timestamp Display */
+.submission-timestamp {
+    background: var(--success-soft);
+    color: var(--success-green);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+
+/* ===========================================================
+   13. FORM STYLING
+   ===========================================================
+*/
+.form-control,
+.form-select {
+    border-radius: var(--radius-md);
+    border: 2px solid var(--neutral-lighter);
+    padding: 0.75rem 1rem;
+    transition: all var(--transition-base);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 4px var(--primary-soft);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+/* Form validation states */
+.form-control.is-valid {
+    border-color: var(--success-green);
+}
+
+.form-control.is-invalid {
+    border-color: var(--danger-red);
+}
+
+/* Custom file input */
+.custom-file-input {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.custom-file-input input[type="file"] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+
+
+/* ===========================================================
+   14. BUTTON STYLING
+   ===========================================================
+*/
+.btn {
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    padding: 0.625rem 1.25rem;
+    transition: all var(--transition-base);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Primary Button */
+.btn-primary {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-blue-hover);
+    border-color: var(--primary-blue-hover);
+}
+
+/* Success Button */
+.btn-success {
+    background-color: var(--success-green);
+    border-color: var(--success-green);
+}
+
+.btn-success:hover {
+    background-color: var(--success-green-hover);
+    border-color: var(--success-green-hover);
+}
+
+/* Danger Button */
+.btn-danger {
+    background-color: var(--danger-red);
+    border-color: var(--danger-red);
+}
+
+.btn-danger:hover {
+    background-color: var(--danger-red-hover);
+    border-color: var(--danger-red-hover);
+}
+
+/* Info Button */
+.btn-info {
+    background-color: var(--primary-blue-light);
+    border-color: var(--primary-blue-light);
+    color: var(--neutral-white);
+}
+
+.btn-info:hover {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: var(--neutral-white);
+}
+
+/* Outline Buttons */
+.btn-outline-primary {
+    color: var(--primary-blue);
+    border-color: var(--primary-blue);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-blue);
+    color: var(--neutral-white);
+}
+
+
+/* ===========================================================
+   15. TRAINING PAGE
+   ===========================================================
+*/
+/* Search and Filter Bar */
+.search-filter-bar {
+    background: var(--neutral-white);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 2rem;
+}
+
+/* Training Module Cards */
+.training-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.training-card .card-body {
+    flex-grow: 1;
+}
+
+.training-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+/* Progress indicator for modules */
+.module-progress {
+    height: 6px;
+    background: var(--neutral-lighter);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.module-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--success-green), var(--primary-blue));
+    border-radius: var(--radius-sm);
+}
+
+/* Document List */
+.document-list .list-group-item {
+    border: none;
+    border-bottom: 1px solid var(--neutral-lighter);
+    padding: 1rem;
+    transition: all var(--transition-base);
+}
+
+.document-list .list-group-item:hover {
+    background: var(--primary-soft);
+}
+
+.document-list .list-group-item:last-child {
+    border-bottom: none;
+}
+
+
+/* ===========================================================
+   16. FOOTER
+   ===========================================================
+*/
+.footer {
+    background: linear-gradient(135deg, var(--neutral-dark) 0%, var(--neutral-darker) 100%);
+}
+
+.footer-links li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color var(--transition-fast);
+}
+
+.footer-links a:hover {
+    color: var(--neutral-white);
+}
+
+.social-links a {
+    transition: all var(--transition-base);
+}
+
+.social-links a:hover {
+    color: var(--primary-blue) !important;
+    transform: translateY(-3px);
+}
+
+.emergency-contact {
+    border-left: 3px solid var(--danger-red);
+}
+
+
+/* ===========================================================
+   17. TOAST NOTIFICATIONS
+   ===========================================================
+*/
+.toast-custom {
+    border-radius: var(--radius-lg);
+    border: none;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.toast-custom .toast-header {
+    background: var(--neutral-white);
+    border-bottom: 1px solid var(--neutral-lighter);
+}
+
+.toast-success {
+    border-left: 4px solid var(--success-green);
+}
+
+.toast-error {
+    border-left: 4px solid var(--danger-red);
+}
+
+.toast-warning {
+    border-left: 4px solid var(--warning-yellow);
+}
+
+.toast-info {
+    border-left: 4px solid var(--info-blue);
+}
+
+
+/* ===========================================================
+   18. BACK TO TOP BUTTON
+   ===========================================================
+*/
+.btn-back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-base);
+    z-index: var(--z-fixed);
+}
+
+.btn-back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.btn-back-to-top:hover {
+    transform: translateY(-5px);
+}
+
+
+/* ===========================================================
+   19. DARK MODE
+   ===========================================================
+*/
+
+/* Base dark mode styles */
+body.dark-mode {
+    background-color: var(--neutral-darker);
+    color: var(--neutral-lighter);
+}
+
+/* ----- Text Colors ----- */
+body.dark-mode .text-dark {
+    color: var(--neutral-lighter) !important;
+}
+
+body.dark-mode .text-muted {
+    color: var(--neutral-gray) !important;
+}
+
+body.dark-mode .text-secondary {
+    color: var(--neutral-light) !important;
+}
+
+body.dark-mode .text-body {
+    color: var(--neutral-lighter) !important;
+}
+
+body.dark-mode p,
+body.dark-mode span,
+body.dark-mode label,
+body.dark-mode small {
+    color: inherit;
+}
+
+body.dark-mode .lead {
+    color: var(--neutral-lighter);
+}
+
+/* ----- Headings ----- */
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6 {
+    color: var(--neutral-white);
+}
+
+body.dark-mode .section-title {
+    color: var(--neutral-white);
+}
+
+body.dark-mode .card-title {
+    color: var(--neutral-white);
+}
+
+/* ----- Cards & Containers ----- */
+body.dark-mode .card {
+    background-color: var(--neutral-dark);
+    border-color: var(--neutral-gray);
+    color: var(--neutral-lighter);
+}
+
+body.dark-mode .card-body {
+    color: var(--neutral-lighter);
+}
+
+body.dark-mode .card-text {
+    color: var(--neutral-light);
+}
+
+body.dark-mode .card-header {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-color: var(--neutral-gray);
+    color: var(--neutral-white);
+}
+
+body.dark-mode .card-footer {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-color: var(--neutral-gray);
+}
+
+body.dark-mode .bg-light {
+    background-color: var(--neutral-dark) !important;
+    color: var(--neutral-lighter) !important;
+}
+
+body.dark-mode .bg-white {
+    background-color: var(--neutral-dark) !important;
+}
+
+/* ----- Forms ----- */
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+    background-color: var(--neutral-dark);
+    border-color: var(--neutral-gray);
+    color: var(--neutral-lighter);
+}
+
+body.dark-mode .form-control::placeholder {
+    color: var(--neutral-gray);
+}
+
+body.dark-mode .form-control:focus,
+body.dark-mode .form-select:focus {
+    background-color: var(--neutral-dark);
+    border-color: var(--primary-color);
+    color: var(--neutral-lighter);
+}
+
+body.dark-mode .form-label {
+    color: var(--neutral-lighter);
+}
+
+body.dark-mode .form-text {
+    color: var(--neutral-gray);
+}
+
+body.dark-mode .form-check-label {
+    color: var(--neutral-lighter);
+}
+
+body.dark-mode .input-group-text {
+    background-color: var(--neutral-gray);
+    border-color: var(--neutral-gray);
+    color: var(--neutral-lighter);
+}
+
+/* ----- Badges ----- */
+body.dark-mode .badge.bg-secondary-soft {
+    background-color: rgba(108, 117, 125, 0.3) !important;
+    color: var(--neutral-light) !important;
+}
+
+body.dark-mode .badge.bg-light {
+    background-color: var(--neutral-gray) !important;
+    color: var(--neutral-white) !important;
+}
+
+/* ----- List Groups ----- */
+body.dark-mode .list-group-item {
+    background-color: var(--neutral-dark);
+    border-color: var(--neutral-gray);
+    color: var(--neutral-lighter);
+}
+
+body.dark-mode .list-group-item-action:hover,
+body.dark-mode .list-group-item-action:focus {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--neutral-white);
+}
+
+/* ----- Tables ----- */
+body.dark-mode .table {
+    color: var(--neutral-lighter);
+    border-color: var(--neutral-gray);
+}
+
+body.dark-mode .table th,
+body.dark-mode .table td {
+    border-color: var(--neutral-gray);
+}
+
+body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+body.dark-mode .table-hover > tbody > tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* ----- Navbar ----- */
+body.dark-mode .navbar {
+    background-color: var(--neutral-darker) !important;
+}
+
+body.dark-mode .navbar .nav-link {
+    color: var(--neutral-lighter);
+}
+
+body.dark-mode .navbar .nav-link:hover,
+body.dark-mode .navbar .nav-link.active {
+    color: var(--primary-color);
+}
+
+body.dark-mode .navbar-brand {
+    color: var(--neutral-white);
+}
+
+body.dark-mode .dropdown-menu {
+    background-color: var(--neutral-dark);
+    border-color: var(--neutral-gray);
+}
+
+body.dark-mode .dropdown-item {
+    color: var(--neutral-lighter);
+}
+
+body.dark-mode .dropdown-item:hover,
+body.dark-mode .dropdown-item:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--neutral-white);
+}
+
+/* ----- Footer ----- */
+body.dark-mode .footer {
+    background: var(--neutral-darker);
+    color: var(--neutral-lighter);
+}
+
+body.dark-mode .footer a {
+    color: var(--neutral-light);
+}
+
+body.dark-mode .footer a:hover {
+    color: var(--primary-color);
+}
+
+/* ----- Links ----- */
+body.dark-mode a.text-muted {
+    color: var(--neutral-gray) !important;
+}
+
+body.dark-mode a.text-muted:hover {
+    color: var(--primary-color) !important;
+}
+
+/* ----- Modals ----- */
+body.dark-mode .modal-content {
+    background-color: var(--neutral-dark);
+    border-color: var(--neutral-gray);
+    color: var(--neutral-lighter);
+}
+
+body.dark-mode .modal-header {
+    border-color: var(--neutral-gray);
+}
+
+body.dark-mode .modal-footer {
+    border-color: var(--neutral-gray);
+}
+
+body.dark-mode .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* ----- Alerts ----- */
+body.dark-mode .alert {
+    border-color: transparent;
+}
+
+/* ----- Progress Bars ----- */
+body.dark-mode .progress {
+    background-color: var(--neutral-gray);
+}
+
+/* ----- Accordions ----- */
+body.dark-mode .accordion-item {
+    background-color: var(--neutral-dark);
+    border-color: var(--neutral-gray);
+}
+
+body.dark-mode .accordion-button {
+    background-color: var(--neutral-dark);
+    color: var(--neutral-lighter);
+}
+
+body.dark-mode .accordion-button:not(.collapsed) {
+    background-color: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary-color);
+}
+
+body.dark-mode .accordion-body {
+    background-color: var(--neutral-dark);
+    color: var(--neutral-lighter);
+}
+
+/* ----- Toasts ----- */
+body.dark-mode .toast {
+    background-color: var(--neutral-dark);
+    border-color: var(--neutral-gray);
+    color: var(--neutral-lighter);
+}
+
+body.dark-mode .toast-header {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-color: var(--neutral-gray);
+    color: var(--neutral-lighter);
+}
+
+/* ----- Scrollbar ----- */
+body.dark-mode::-webkit-scrollbar-track {
+    background: var(--neutral-darker);
+}
+
+body.dark-mode::-webkit-scrollbar-thumb {
+    background-color: var(--neutral-gray);
+}
+
+body.dark-mode::-webkit-scrollbar-thumb:hover {
+    background-color: var(--neutral-light);
+}
+
+/* ----- Custom Components ----- */
+body.dark-mode .metric-card {
+    background-color: var(--neutral-dark);
+}
+
+body.dark-mode .metric-value {
+    color: var(--neutral-white);
+}
+
+body.dark-mode .metric-label {
+    color: var(--neutral-light);
+}
+
+body.dark-mode .metric-trend {
+    color: var(--neutral-gray);
+}
+
+body.dark-mode .quick-action-card {
+    background-color: var(--neutral-dark);
+    color: var(--neutral-lighter);
+}
+
+body.dark-mode .quick-action-card:hover {
+    background-color: var(--neutral-gray);
+}
+
+body.dark-mode .activity-item {
+    border-color: var(--neutral-gray);
+}
+
+body.dark-mode .activity-content h6 {
+    color: var(--neutral-white);
+}
+
+body.dark-mode .upload-area {
+    background-color: var(--neutral-dark);
+    border-color: var(--neutral-gray);
+    color: var(--neutral-lighter);
+}
+
+body.dark-mode .upload-area:hover,
+body.dark-mode .upload-area.drag-over {
+    border-color: var(--primary-color);
+    background-color: rgba(var(--primary-rgb), 0.05);
+}
+
+body.dark-mode .phase-card {
+    background-color: var(--neutral-dark);
+}
+
+body.dark-mode .phase-header {
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--neutral-white);
+}
+
+body.dark-mode .training-card {
+    background-color: var(--neutral-dark);
+}
+
+body.dark-mode .training-card .card-title {
+    color: var(--neutral-white);
+}
+
+/* ----- Borders & Dividers ----- */
+body.dark-mode .border {
+    border-color: var(--neutral-gray) !important;
+}
+
+body.dark-mode .border-top,
+body.dark-mode .border-bottom,
+body.dark-mode .border-start,
+body.dark-mode .border-end {
+    border-color: var(--neutral-gray) !important;
+}
+
+body.dark-mode hr {
+    border-color: var(--neutral-gray);
+    opacity: 0.25;
+}
+
+/* ----- Back to Top Button ----- */
+body.dark-mode .back-to-top {
+    background-color: var(--neutral-dark);
+    color: var(--neutral-lighter);
+    border-color: var(--neutral-gray);
+}
+
+body.dark-mode .back-to-top:hover {
+    background-color: var(--primary-color);
+    color: var(--neutral-white);
+    border-color: var(--primary-color);
+}
+
+/* ----- Icons in dark mode ----- */
+body.dark-mode .text-muted i,
+body.dark-mode .text-secondary i {
+    color: inherit;
+}
+
+
+/* ===========================================================
+   20. RESPONSIVE BREAKPOINTS
+   ===========================================================
+*/
+
+/* Tablets and smaller desktops */
+@media (max-width: 991.98px) {
+    .hero-section {
+        background-attachment: scroll;
+        min-height: 80vh;
+    }
+    
+    .section-title {
+        font-size: 1.75rem;
+    }
+    
+    .metric-value {
+        font-size: 2rem;
+    }
+    
+    .navbar-collapse {
+        background: var(--neutral-dark);
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        margin-top: 1rem;
+    }
+}
+
+/* Mobile devices */
+@media (max-width: 767.98px) {
+    body {
+        padding-top: 60px;
+    }
+    
+    .hero-section {
+        min-height: 90vh;
+        padding: 3rem 0;
+    }
+    
+    .hero-section .display-3 {
+        font-size: 2rem;
+    }
+    
+    .hero-section .lead {
+        font-size: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 1.25rem;
+    }
+    
+    .stat-label {
+        font-size: 0.65rem;
+    }
+    
+    .section-header {
+        margin-bottom: 2rem;
+    }
+    
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .btn-back-to-top {
+        bottom: 20px;
+        right: 20px;
+        width: 44px;
+        height: 44px;
+    }
+    
+    .footer {
+        text-align: center;
+    }
+    
+    .footer .col-lg-4:first-child {
+        margin-bottom: 2rem;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 575.98px) {
+    .hero-section .btn-lg {
+        display: block;
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .quick-stats .row > div {
+        margin-bottom: 0.5rem;
+    }
+    
+    .metric-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .action-icon {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+
+/* ===========================================================
+   21. PRINT STYLES
+   ===========================================================
+*/
+@media print {
+    .navbar,
+    .footer,
+    .btn-back-to-top,
+    .scroll-indicator {
+        display: none !important;
+    }
+    
+    body {
+        padding-top: 0;
+    }
+    
+    .hero-section {
+        background: none;
+        color: #000;
+        min-height: auto;
+        padding: 1rem 0;
+    }
+    
+    .card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}
